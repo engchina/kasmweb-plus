@@ -12,10 +12,18 @@ RUN dnf install -y sudo \
     && echo 'kasm-user ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
     && dnf clean all
 
+### Prepare for start sshd
+RUN mkdir -p /run/sshd \
+    && ssh-keygen -A
+
+EXPOSE 22
+
+### Copy startup scripts
+COPY ./src/common/startup_scripts $STARTUPDIR
+
 ### Install Minio
 ENV MINIO_ROOT_USER=kasm_user \
     MINIO_ROOT_PASSWORD=$VNC_PW
-COPY ./src/common/startup_scripts $STARTUPDIR
 COPY ./src/oracle/install/minio $INST_SCRIPTS/minio/
 RUN bash $INST_SCRIPTS/minio/install_minio.sh  && rm -rf $INST_SCRIPTS/minio/ \
     && chmod +x $STARTUPDIR/minio_startup.sh
@@ -23,8 +31,22 @@ RUN bash $INST_SCRIPTS/minio/install_minio.sh  && rm -rf $INST_SCRIPTS/minio/ \
 EXPOSE 9000 \
        9001
 
+### Install kubectl
+COPY ./src/oracle/install/kubectl $INST_SCRIPTS/kubectl/
+RUN bash $INST_SCRIPTS/kubectl/install_kubectl.sh  && rm -rf $INST_SCRIPTS/kubectl/
+
 USER 1000
 
-ENTRYPOINT ["/dockerstartup/minio_startup.sh", "/dockerstartup/kasm_default_profile.sh", "/dockerstartup/vnc_startup.sh", "/dockerstartup/kasm_startup.sh"]
+### Install OCI CLI
+COPY ./src/oracle/install/ocicli $INST_SCRIPTS/ocicli/
+RUN bash $INST_SCRIPTS/ocicli/install_ocicli.sh \
+    && sudo rm -rf $INST_SCRIPTS/ocicli/
+
+### Install sdkman
+COPY ./src/oracle/install/sdkman $INST_SCRIPTS/sdkman/
+RUN bash $INST_SCRIPTS/sdkman/install_sdkman.sh \
+    && sudo rm -rf $INST_SCRIPTS/sdkman/
+
+ENTRYPOINT ["/dockerstartup/init_startup.sh", "/dockerstartup/minio_startup.sh", "/dockerstartup/kasm_default_profile.sh", "/dockerstartup/vnc_startup.sh", "/dockerstartup/kasm_startup.sh"]
 
 CMD ["--tail-log"]
