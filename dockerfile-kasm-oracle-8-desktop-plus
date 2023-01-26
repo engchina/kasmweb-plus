@@ -1,0 +1,30 @@
+ARG BASE_TAG="1.12.0-rolling"
+ARG BASE_IMAGE="kasmweb/oracle-8-desktop"
+FROM $BASE_IMAGE:$BASE_TAG
+
+ENV HOME /home/kasm-user
+WORKDIR $HOME
+
+USER root
+
+### Install sudo
+RUN dnf install -y sudo \
+    && echo 'kasm-user ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
+    && dnf clean all
+
+### Install Minio
+ENV MINIO_ROOT_USER=kasm_user \
+    MINIO_ROOT_PASSWORD=$VNC_PW
+COPY ./src/common/startup_scripts $STARTUPDIR
+COPY ./src/oracle/install/minio $INST_SCRIPTS/minio/
+RUN bash $INST_SCRIPTS/minio/install_minio.sh  && rm -rf $INST_SCRIPTS/minio/ \
+    && chmod +x $STARTUPDIR/minio_startup.sh
+
+EXPOSE 9000 \
+       9001
+
+USER 1000
+
+ENTRYPOINT ["/dockerstartup/minio_startup.sh", "/dockerstartup/kasm_default_profile.sh", "/dockerstartup/vnc_startup.sh", "/dockerstartup/kasm_startup.sh"]
+
+CMD ["--tail-log"]
