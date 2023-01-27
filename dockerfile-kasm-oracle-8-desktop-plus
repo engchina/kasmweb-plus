@@ -8,7 +8,7 @@ WORKDIR $HOME
 USER root
 
 ### Install sudo
-RUN dnf install -y sudo \
+RUN dnf install -y sudo \ 
     && echo 'kasm-user ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
     && dnf clean all
 
@@ -35,6 +35,13 @@ EXPOSE 9000 \
 COPY ./src/oracle/install/kubectl $INST_SCRIPTS/kubectl/
 RUN bash $INST_SCRIPTS/kubectl/install_kubectl.sh  && rm -rf $INST_SCRIPTS/kubectl/
 
+### Install alist
+COPY ./src/oracle/install/alist $INST_SCRIPTS/alist/
+RUN bash $INST_SCRIPTS/alist/install_alist.sh  && rm -rf $INST_SCRIPTS/alist/
+
+EXPOSE 5244
+
+### Change user to 1000
 USER 1000
 
 ### Install OCI CLI
@@ -47,6 +54,6 @@ COPY ./src/oracle/install/sdkman $INST_SCRIPTS/sdkman/
 RUN bash $INST_SCRIPTS/sdkman/install_sdkman.sh \
     && sudo rm -rf $INST_SCRIPTS/sdkman/
 
-ENTRYPOINT ["/dockerstartup/init_startup.sh", "/dockerstartup/minio_startup.sh", "/dockerstartup/kasm_default_profile.sh", "/dockerstartup/vnc_startup.sh", "/dockerstartup/kasm_startup.sh"]
+ENTRYPOINT ["/dockerstartup/init_startup.sh", "/dockerstartup/minio_startup.sh", "/dockerstartup/alist_startup.sh", "/dockerstartup/kasm_default_profile.sh", "/dockerstartup/vnc_startup.sh", "/dockerstartup/kasm_startup.sh"]
 
 CMD ["--tail-log"]

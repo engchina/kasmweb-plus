@@ -17,3 +17,33 @@ password: $VNC_PW (default: vncpassword)
 url: http://HOST_IP:9001
 username: $MINIO_ROOT_USER (default: kasm_user)
 password: $MINIO_ROOT_PASSWORD (default: vncpassword)
+
+## Access alist
+url: http://HOST_IP:5244
+username: shown by execute `alist admin`
+password: shown by execute `alist admin`
+
+### Mount Local File System
+驱动: 本地存储
+挂载路径: /local_files
+根文件夹路径: /
+
+### Mount OCI Object Storage
+驱动: 对象存储
+挂载路径: /oci_objectstorage
+根文件夹路径: /
+存储桶: /<your_oci_bucket>
+Endpoint: https://<your_oci_objectstorage_namespace>.compat.objectstorage.<oci_region>.oraclecloud.com/
+地区: <oci_region>
+访问密钥 Id: <your_oci_access_key>
+安全访问密钥: <your_oci_secret_key>
+
+### Mount Minio Object Storage
+驱动: 对象存储
+挂载路径: /minio_objectstorage
+根文件夹路径: /
+存储桶: /<your_minio_bucket>
+Endpoint: http://<your_ip>:9000
+地区: alist
+访问密钥 Id: <your_minio_access_key>
+安全访问密钥: <your_minio_secret_key>

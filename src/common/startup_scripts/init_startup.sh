@@ -14,6 +14,12 @@ function merge_bashrc_to_home {
     ls -la $HOME
 }
 
+# delete .wget-hsts
+if  [ -f "$HOME/.wget-hsts" ]; then
+    echo "$HOME/.wget-hsts exists. Will delete it"
+    rm -rf $HOME/.wget-hsts
+fi
+
 # start sshd
 echo "kasm-user:$VNC_PW" | sudo chpasswd
 sudo /usr/sbin/sshd
