@@ -20,11 +20,11 @@ password: $MINIO_ROOT_PASSWORD (default: vncpassword)
 
 ## Access alist
 url: http://HOST_IP:5244
-username: shown by execute `alist admin`
-password: shown by execute `alist admin`
+username: shown by execute `sudo alist admin`
+password: shown by execute `sudo alist admin`
 
 ### Mount Local File System
-驱动: 本地存储
+驱动: 本机存储
 挂载路径: /local_files
 根文件夹路径: /
 
@@ -44,6 +44,5 @@ Endpoint: https://<your_oci_objectstorage_namespace>.compat.objectstorage.<oci_r
 根文件夹路径: /
 存储桶: /<your_minio_bucket>
 Endpoint: http://<your_ip>:9000
-地区: alist
 访问密钥 Id: <your_minio_access_key>
 安全访问密钥: <your_minio_secret_key>
